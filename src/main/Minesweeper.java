@@ -2,17 +2,20 @@ package main;
 
 import java.util.Scanner;
 
-import utils.Functions;
+import utils.Board;
+import utils.MinesPlacer;
+import utils.ClueCalculator;
+import utils.BoardDisplay;
 
-public class MInesweeper {
+public class Minesweeper {
 	public static void main(String[] args) {
 
-		char[][] board = new char[Functions.ROWS][Functions.COLS];
-		char[][] visible = new char[Functions.ROWS][Functions.COLS];
+		char[][] board = new char[Board.ROWS][Board.COLS];
+		char[][] visible = new char[Board.ROWS][Board.COLS];
 
-		Functions.initBoard(board, visible);
-		Functions.placeMines(board);
-		Functions.calculateClues(board);
+		Board.initBoard(board, visible);
+		MinesPlacer.placeMines(board);
+		ClueCalculator.calculateClues(board);
 
 		Scanner sc = new Scanner(System.in);
 		boolean gameOver = false;
@@ -20,33 +23,44 @@ public class MInesweeper {
 		while (!gameOver) {
 
             // Display the current visible board to the player
-            Functions.showBoard(visible);
+            BoardDisplay.showBoard(visible);
 
-            System.out.print("Enter row (0-" + (Functions.ROWS - 1) + "): ");
-            int r = sc.nextInt();
+            System.out.print("Enter row (1-" + (Board.ROWS) + "): ");
+            int r = (sc.nextInt()-1);
 
-            System.out.print("Enter column (0-" + (Functions.COLS - 1) + "): ");
-            int c = sc.nextInt();
+            System.out.print("Enter column (1-" + (Board.COLS) + "): ");
+            int c = (sc.nextInt()-1);
 
             // Check if the input is outside the board limits
-            if (r < 0 || r >= Functions.ROWS || c < 0 || c >= Functions.COLS) {
+            if (r < 0 || r >= Board.ROWS || c < 0 || c >= Board.COLS) {
                 System.out.println("Position out of range!");
                 continue;
             }
-
+            
+            // Check if the cell is already revealed
+            if (visible[r][c] != '-') {
+                System.out.println("That cell is already revealed!");
+                continue;
+            }
+            
             // If the player hits a mine, the game ends
             if (board[r][c] == '*') {
                 System.out.println("BOOM! You stepped on a mine.");
                 
                 // Reveal the full board so the player can see where all mines were
-                Functions.showBoard(board);
+                BoardDisplay.showBoard(board);
                 
                 gameOver = true;
 
             } else {
                 // Reveal the selected cell to the player
                 visible[r][c] = board[r][c];
-
+             // Check if the player has won
+                if (Board.hasWon(board, visible)) {
+                    BoardDisplay.showBoard(visible);
+                    System.out.println("Congratulations! You revealed all safe cells!");
+                    gameOver = true;
+                }
             }
         }
 		sc.close();
