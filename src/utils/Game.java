@@ -11,7 +11,7 @@ public class Game {
 
 	}
 
-	public static boolean runGame(char[][] boardWithMines, char[][] boardVisibleForPlayer) {
+	public static void runGame(char[][] boardWithMines, char[][] boardVisibleForPlayer) {
 		Scanner scanner = new Scanner(System.in);
 
 		boolean gameOver = false;
@@ -60,7 +60,6 @@ public class Game {
             }
         }
 		scanner.close();
-		return gameOver;
 	}
 	
 }
